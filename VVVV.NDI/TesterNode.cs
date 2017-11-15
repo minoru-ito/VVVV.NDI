@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Runtime.InteropServices;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
@@ -34,7 +35,8 @@ namespace VVVV.DX11.Nodes
                 }
                 else
                 {
-                    FLogger.Log(LogType.Message, NDIlib.version().ToString());
+                    FLogger.Log(LogType.Message, "is_supported_CPU: " + NDIlib.is_supported_CPU());
+                    FLogger.Log(LogType.Message, Marshal.PtrToStringAnsi(NDIlib.version()));
 
                     initialized = true;
                 }
