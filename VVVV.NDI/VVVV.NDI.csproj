@@ -94,6 +94,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NDIFindNode.cs" />
     <Compile Include="NDIReceiveNode.cs" />
     <Compile Include="TesterNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
