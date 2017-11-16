@@ -27,14 +27,17 @@ namespace VVVV.DX11.Nodes
             public static extern void CopyMemory(IntPtr dest, IntPtr src, int count);
 
 
-            [Input("Source Name", DefaultString = "Example")]
-            IDiffSpread<string> FInSourceName;
+            [Input("Source", IsSingle = true)]
+            IDiffSpread<Source> FInSource;
 
-            [Input("Connect")]
-            IDiffSpread<bool> FInConnect;
+            //[Input("Source Name", DefaultString = "Example")]
+            //IDiffSpread<string> FInSourceName;
 
-            [Input("Update", IsBang = true)]
-            ISpread<bool> FInUpdate;
+            //[Input("Connect")]
+            //IDiffSpread<bool> FInConnect;
+
+            //[Input("Update", IsBang = true)]
+            //ISpread<bool> FInUpdate;
 
 
             [Output("Texture Out")]
@@ -49,8 +52,8 @@ namespace VVVV.DX11.Nodes
             [Output("Buffer Size")]
             ISpread<int> FOutBufferSize;
 
-            [Output("Key")]
-            ISpread<string> FOutKey;
+            //[Output("Key")]
+            //ISpread<string> FOutKey;
 
             //[Output("Format")]
             //ISpread<string> FOutFormat;
@@ -85,7 +88,7 @@ namespace VVVV.DX11.Nodes
             // a way to exit the thread safely
             bool _exitThread = false;
 
-            Finder _findInstance;
+            //Finder _findInstance;
 
             // a map of names to sources
             //Dictionary<String, NDIlib.source_t> _sources = new Dictionary<string, NDIlib.source_t>();
@@ -120,7 +123,7 @@ namespace VVVV.DX11.Nodes
                     FOutInitialized[0] = true;
                     initialized = true;
 
-                    _findInstance = new Finder(true);
+                    //_findInstance = new Finder(true);
                 }
             }
 
@@ -160,8 +163,8 @@ namespace VVVV.DX11.Nodes
                             _recvInstancePtr = IntPtr.Zero;
                         }
 
-                        if (_findInstance != null)
-                            _findInstance.Dispose();
+                        //if (_findInstance != null)
+                        //    _findInstance.Dispose();
 
                         // Not required, but "correct". (see the SDK documentation)
                         NDIlib.destroy();
@@ -179,6 +182,7 @@ namespace VVVV.DX11.Nodes
 
             public void Evaluate(int SpreadMax)
             {
+                /*
                 if(FInConnect.IsChanged)
                 {
                     if(FInConnect[0])
@@ -206,6 +210,19 @@ namespace VVVV.DX11.Nodes
                     }
                     //UpdateFindList();
                 }
+                */
+
+                if(FInSource.IsChanged)
+                {
+                    if (FInSource.SliceCount == 0 || FInSource[0] == null)
+                    {
+                        Disconnect();
+                    }
+                    else
+                    {
+                        Connect(FInSource[0]);
+                    }
+                }
 
                 if(_recvInstancePtr == IntPtr.Zero)
                 {
@@ -230,12 +247,21 @@ namespace VVVV.DX11.Nodes
                         FOutTexture[0] = new DX11Resource<DX11DynamicTexture2D>();
                     }
 
-                    invalidate = true;
+                    //invalidate = true;
                 }
 
-                FOutWidth[0] = width;
-                FOutHeight[0] = height;
-                FOutBufferSize[0] = bufferSize;
+                if (FInSource.SliceCount == 0 || FInSource[0] == null)
+                {
+                    FOutWidth[0] = 0;
+                    FOutHeight[0] = 0;
+                    FOutBufferSize[0] = 0;
+                }
+                else
+                {
+                    FOutWidth[0] = width;
+                    FOutHeight[0] = height;
+                    FOutBufferSize[0] = bufferSize;
+                }
             }
 
             unsafe public void Update(DX11RenderContext context)
@@ -439,6 +465,9 @@ namespace VVVV.DX11.Nodes
 
                             // free frames that were received
                             NDIlib.recv_free_video_v2(_recvInstancePtr, ref videoFrame);
+
+                            // set flag for update texture
+                            invalidate = true;
 
                             break;
                         /*

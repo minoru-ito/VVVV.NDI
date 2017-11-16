@@ -116,32 +116,10 @@
    </NODE>
    <LINK srcnodeid="2" srcpinname="Initialized" dstnodeid="7" dstpinname="Y Input Value">
    </LINK>
-   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="8">
-   <BOUNDS type="Box" left="3170" top="1030" width="480" height="480">
-   </BOUNDS>
-   <BOUNDS type="Node" left="3170" top="1030" width="0" height="0">
-   </BOUNDS>
-   <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
-   </PIN>
-   <PIN pinname="Units" slicecount="1" values="||">
-   </PIN>
-   <PIN pinname="Precision" slicecount="1" values="4">
-   </PIN>
-   <PIN pinname="Value Type" slicecount="1" values="Boolean">
-   </PIN>
-   <PIN pinname="Behavior" slicecount="1" values="Toggle">
-   </PIN>
-   <PIN pinname="Descriptive Name" slicecount="1" values="Connect">
-   </PIN>
-   <PIN pinname="X Input Value" slicecount="1" values="0">
-   </PIN>
-   </NODE>
-   <LINK srcnodeid="8" srcpinname="Y Output Value" dstnodeid="2" dstpinname="Connect">
-   </LINK>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="9">
-   <BOUNDS type="Box" left="4620" top="970" width="480" height="480">
+   <BOUNDS type="Box" left="3370" top="540" width="480" height="480">
    </BOUNDS>
-   <BOUNDS type="Node" left="4620" top="970" width="0" height="0">
+   <BOUNDS type="Node" left="3370" top="540" width="0" height="0">
    </BOUNDS>
    <PIN pinname="Y Input Value" slicecount="1" visible="1" values="0">
    </PIN>
@@ -156,6 +134,8 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="Update">
    </PIN>
    <PIN pinname="X Input Value" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Y Output Value" visible="1">
    </PIN>
    </NODE>
    <LINK srcnodeid="9" srcpinname="Y Output Value" dstnodeid="2" dstpinname="Update">
@@ -179,5 +159,47 @@
    </PIN>
    </NODE>
    <LINK srcnodeid="10" srcpinname="frames per second" dstnodeid="11" dstpinname="Y Input Value">
+   </LINK>
+   <NODE systemname="Find (NDI)" filename="..\VVVV.NDI\bin\x64\Debug\VVVV.NDI.dll" nodename="Find (NDI)" componentmode="Hidden" id="12">
+   <BOUNDS type="Node" left="3360" top="1200" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="3360" top="1200" width="2000" height="2000">
+   </BOUNDS>
+   <PIN pinname="Update" visible="1">
+   </PIN>
+   <PIN pinname="Name" visible="1">
+   </PIN>
+   <PIN pinname="Count" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="9" srcpinname="Y Output Value" dstnodeid="12" dstpinname="Update">
+   </LINK>
+   <NODE nodename="IOBox (String)" componentmode="InABox" id="13">
+   <BOUNDS type="Box" left="3840" top="1900" width="800" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="3840" top="1900" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Default" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="File Mask" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Maximum Characters" slicecount="1" values="-1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="12" srcpinname="Name" dstnodeid="13" dstpinname="Input String">
+   </LINK>
+   <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="14">
+   <BOUNDS type="Box" left="4850" top="1960" width="800" height="240">
+   </BOUNDS>
+   <BOUNDS type="Node" left="4850" top="1960" width="0" height="0">
+   </BOUNDS>
+   <PIN pinname="Units" slicecount="1" values="||">
+   </PIN>
+   <PIN pinname="Precision" slicecount="1" values="4">
+   </PIN>
+   <PIN pinname="Value Type" slicecount="1" values="Integer">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="12" srcpinname="Count" dstnodeid="14" dstpinname="Y Input Value">
    </LINK>
    </PATCH>
