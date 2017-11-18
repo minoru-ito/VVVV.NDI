@@ -70,6 +70,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -95,7 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NDIFindNode.cs" />
+    <Compile Include="NDISendNode.cs" />
     <Compile Include="NDIReceiveNode.cs" />
+    <Compile Include="NDISendTestNode.cs" />
     <Compile Include="TesterNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
