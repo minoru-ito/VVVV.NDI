@@ -357,7 +357,7 @@ namespace VVVV.DX11.Nodes
                     SetTallyIndicators(true, false);
 
                     // start up a thread to receive on
-                    _receiveThread = new Thread(ReceiveThreadProc) { IsBackground = true, Name = "NdiExampleReceiveThread" };
+                    _receiveThread = new Thread(ReceiveThreadProc) { IsBackground = true, Name = "NDIReceiveThread" };
                     _receiveThread.Start();
                 }
             }
