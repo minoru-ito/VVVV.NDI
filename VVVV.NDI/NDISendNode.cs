@@ -43,7 +43,7 @@ namespace VVVV.DX11.Nodes
             //[Input("Connect")]
             //IDiffSpread<bool> FInConnect;
 
-            [Input("Send", IsBang = true)]
+            [Input("Send")]
             ISpread<bool> FInSend;
 
             [Input("Timeout", MinValue = 0, DefaultValue = 1000)]
