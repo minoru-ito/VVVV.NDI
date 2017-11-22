@@ -59,6 +59,9 @@ namespace VVVV.DX11.Nodes
             [Output("Initialized", Visibility = PinVisibility.Hidden)]
             ISpread<bool> FOutInitialized;
 
+            [Output("Frame Count")]
+            ISpread<int> FOutFrameCount;
+
             [Import()]
             public ILogger FLogger;
 
@@ -285,7 +288,7 @@ namespace VVVV.DX11.Nodes
                 stride = (xres * 32/*BGRA bpp*/ + 7) / 8;
                 bufferSize = yres * stride;
                 aspectRatio = (float)xres / (float)yres;
-                
+
                 //if(bufferPtr != IntPtr.Zero)
                 //{
                 //    // free our buffer
@@ -296,6 +299,8 @@ namespace VVVV.DX11.Nodes
                 //bufferPtr = Marshal.AllocHGlobal(bufferSize);
                 IntPtr bufferPtr = Marshal.AllocHGlobal(bufferSize);
 
+                //FLogger.Log(LogType.Message, "updateSendBuffer: " + xres + "," + yres + "," + bufferSize);
+
                 // We are going to create a progressive frame at 60Hz.
                 NDIlib.video_frame_v2_t videoFrame = new NDIlib.video_frame_v2_t()
                 {
@@ -304,7 +309,7 @@ namespace VVVV.DX11.Nodes
                     yres = src.Description.Height,
                     // Use BGRA video
                     FourCC = NDIlib.FourCC_type_e.FourCC_type_BGRA,
-                    // The frame-eate
+                    // The frame-rate
                     frame_rate_N = FInFramerate[0] * 1000,
                     frame_rate_D = 1000,
                     // The aspect ratio
@@ -322,7 +327,7 @@ namespace VVVV.DX11.Nodes
                     // only valid on received frames
                     timestamp = NDIlib.recv_timestamp_undefined
                 };
-                
+
                 // copy data to buffer
                 TextureToBuffer(src, ref bufferPtr);
 
@@ -346,9 +351,14 @@ namespace VVVV.DX11.Nodes
                     DataBox db = AssignedContext.CurrentDeviceContext.MapSubresource(dst, 0, MapMode.Read, MapFlags.None);
 
                     // create buffer
-                    if(dataStreamLength != db.Data.Length)
+                    if (dataStreamLength != db.Data.Length)
                     {
                         dataStreamLength = db.Data.Length;
+
+                        // avoid size difference (is this correct way?)
+                        if (dataStreamLength != bufferSize)
+                            dataStreamLength = bufferSize;
+
                         srcBuffer = new byte[dataStreamLength];
                     }
 
@@ -361,7 +371,7 @@ namespace VVVV.DX11.Nodes
                     if (FInRGBAtoBGRA[0])
                     {
                         ConvertBuffer();
-                            
+
                         Marshal.Copy(convertBuffer, 0, bufferPtr, (int)dataStreamLength);
                     }
                     else
@@ -371,6 +381,8 @@ namespace VVVV.DX11.Nodes
                     }
                      */
 
+                    //FLogger.Log(LogType.Message, "TextureToBuffer: " + db.RowPitch + "," + db.SlicePitch + "," + db.Data.Length);
+                    
                     // byte array to IntPtr
                     Marshal.Copy(srcBuffer, 0, buffer, (int)dataStreamLength);
 
@@ -809,6 +821,8 @@ namespace VVVV.DX11.Nodes
                 {
                     return false;
                 }
+
+                FOutFrameCount[0] = pendingFrames.Count;
 
                 return true;
             }
