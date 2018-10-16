@@ -1,14 +1,14 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta35.7.dtd" >
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta37.dtd" >
    <PATCH nodename="C:\github\VVVV.NDI\v4p\receiver.v4p" systemname="receiver" filename="C:\github\VVVV.NDI\v4p\receiver.v4p">
    <BOUNDS type="Window" left="12720" top="1350" width="10100" height="6700">
    </BOUNDS>
-   <PACK Name="dx11" Version="1.0.2">
+   <PACK Name="dx11" Version="1.3.1">
    </PACK>
    <PACK Name="vvvv-Message" Version="2.9.8">
    </PACK>
    <PACK Name="vvvv-ZeroMQ" Version="0.5.5">
    </PACK>
-   <PACK Name="addonpack" Version="35.0.0">
+   <PACK Name="addonpack" Version="36.0.0">
    </PACK>
    <NODE systemname="Find (NDI)" filename="..\VVVV.NDI\bin\x64\Release\VVVV.NDI.dll" nodename="Find (NDI)" componentmode="Hidden" id="0">
    <BOUNDS type="Node" left="2590" top="1510" width="100" height="100">

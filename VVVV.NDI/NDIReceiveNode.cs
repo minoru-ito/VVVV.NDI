@@ -30,8 +30,8 @@ namespace VVVV.DX11.Nodes
             [Input("Source", IsSingle = true)]
             IDiffSpread<Source> FInSource;
 
-            //[Input("Source Name", DefaultString = "Example")]
-            //IDiffSpread<string> FInSourceName;
+            [Input("Receiver Name", DefaultString = "Receiver")]
+            ISpread<string> FInReceiverName;
 
             //[Input("Connect")]
             //IDiffSpread<bool> FInConnect;
@@ -311,22 +311,24 @@ namespace VVVV.DX11.Nodes
             // connect to an NDI source in our Dictionary by name
             void Connect(Source source)
             {
+                if (FInReceiverName.SliceCount == 0 || String.IsNullOrEmpty(FInReceiverName[0]))
+                    FLogger.Log(LogType.Error, "receiverName can not be null or empty.");
+
                 // just in case we're already connected
                 Disconnect();
 
                 // Sanity
-                if (source == null || (String.IsNullOrEmpty(source.Name) && String.IsNullOrEmpty(source.IpAddress)))
+                if (source == null || String.IsNullOrEmpty(source.Name))
                     return;
 
                 // a source_t to describe the source to connect to.
                 NDIlib.source_t source_t = new NDIlib.source_t()
                 {
-                    p_ip_address = UTF.StringToUtf8(source.IpAddress),
                     p_ndi_name = UTF.StringToUtf8(source.Name)
                 };
 
                 // make a description of the receiver we want
-                NDIlib.recv_create_t recvDescription = new NDIlib.recv_create_t()
+                NDIlib.recv_create_v3_t recvDescription = new NDIlib.recv_create_v3_t()
                 {
                     // the source we selected
                     source_to_connect_to = source_t,
@@ -338,18 +340,25 @@ namespace VVVV.DX11.Nodes
                     bandwidth = NDIlib.recv_bandwidth_e.recv_bandwidth_highest,
 
                     // let NDIlib deinterlace for us if needed
-                    allow_video_fields = false
+                    allow_video_fields = false,
+
+                    // The name of the NDI receiver to create. This is a NULL terminated UTF8 string and should be
+                    // the name of receive channel that you have. This is in many ways symettric with the name of
+                    // senders, so this might be "Channel 1" on your system.
+                    p_ndi_recv_name = UTF.StringToUtf8(FInReceiverName[0])
                 };
 
                 // create a new instance connected to this source
-                _recvInstancePtr = NDIlib.recv_create_v2(ref recvDescription);
+                _recvInstancePtr = NDIlib.recv_create_v3(ref recvDescription);
 
                 // free the memory we allocated with StringToUtf8
-                Marshal.FreeHGlobal(source_t.p_ip_address);
                 Marshal.FreeHGlobal(source_t.p_ndi_name);
+                Marshal.FreeHGlobal(recvDescription.p_ndi_recv_name);
 
                 // did it work?
-                System.Diagnostics.Debug.Assert(_recvInstancePtr != IntPtr.Zero, "Failed to create NDI receive instance.");
+                //System.Diagnostics.Debug.Assert(_recvInstancePtr != IntPtr.Zero, "Failed to create NDI receive instance.");
+                if (_recvInstancePtr == IntPtr.Zero)
+                    FLogger.Log(LogType.Warning, "Failed to create NDI receive instance.");
 
                 if (_recvInstancePtr != IntPtr.Zero)
                 {
@@ -470,7 +479,6 @@ namespace VVVV.DX11.Nodes
                             invalidate = true;
 
                             break;
-                        /*
                         // Metadata
                         case NDIlib.frame_type_e.frame_type_metadata:
 
@@ -482,7 +490,6 @@ namespace VVVV.DX11.Nodes
                             // free frames that were received
                             NDIlib.recv_free_metadata(_recvInstancePtr, ref metadataFrame);
                             break;
-                        */
                     }
                 }
             }

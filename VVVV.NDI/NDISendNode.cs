@@ -317,7 +317,7 @@ namespace VVVV.DX11.Nodes
                     // This is a progressive frame
                     frame_format_type = NDIlib.frame_format_type_e.frame_format_type_progressive,
                     // Timecode.
-                    timecode = 0,
+                    timecode = NDIlib.send_timecode_synthesize,// 0,
                     // The video memory used for this frame
                     p_data = bufferPtr,
                     // The line to line stride of this image
@@ -325,7 +325,7 @@ namespace VVVV.DX11.Nodes
                     // no metadata
                     p_metadata = IntPtr.Zero,
                     // only valid on received frames
-                    timestamp = NDIlib.recv_timestamp_undefined
+                    timestamp = 0// NDIlib.recv_timestamp_undefined
                 };
 
                 // copy data to buffer

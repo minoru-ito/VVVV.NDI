@@ -1,33 +1,15 @@
-<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta35.7.dtd" >
+<!DOCTYPE PATCH  SYSTEM "http://vvvv.org/versions/vvvv50beta37.dtd" >
    <PATCH nodename="C:\github\VVVV.NDI\v4p\sender.v4p" systemname="sender" filename="C:\github\VVVV.NDI\v4p\sender.v4p">
    <BOUNDS type="Window" left="2590" top="1120" width="9000" height="6970">
    </BOUNDS>
-   <PACK Name="dx11" Version="1.0.2">
+   <PACK Name="dx11" Version="1.3.1">
    </PACK>
    <PACK Name="vvvv-Message" Version="2.9.8">
    </PACK>
    <PACK Name="vvvv-ZeroMQ" Version="0.5.5">
    </PACK>
-   <PACK Name="addonpack" Version="35.0.0">
+   <PACK Name="addonpack" Version="36.0.0">
    </PACK>
-   <NODE systemname="Send (NDI DX11)" filename="..\VVVV.NDI\bin\x64\Release\VVVV.NDI.dll" nodename="Send (NDI DX11)" componentmode="Hidden" id="0">
-   <BOUNDS type="Node" left="5300" top="4140" width="100" height="100">
-   </BOUNDS>
-   <BOUNDS type="Box" left="5300" top="4140" width="2000" height="2000">
-   </BOUNDS>
-   <PIN pinname="Version" visible="1">
-   </PIN>
-   <PIN pinname="Frame Count" visible="1">
-   </PIN>
-   <PIN pinname="Source Name" visible="1">
-   </PIN>
-   <PIN pinname="Framerate" visible="1">
-   </PIN>
-   <PIN pinname="Send" visible="1" slicecount="1" values="0">
-   </PIN>
-   <PIN pinname="Texture In" visible="1">
-   </PIN>
-   </NODE>
    <NODE systemname="Preview (DX11.Texture)" filename="%VVVV%\packs\dx11\nodes\plugins\VVVV.DX11.Nodes.dll" nodename="Preview (DX11.Texture)" componentmode="InAWindow" id="10">
    <BOUNDS type="Node" left="1060" top="3790" width="100" height="100">
    </BOUNDS>
@@ -193,7 +175,7 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Version">
    </PIN>
-   <PIN pinname="Input String" visible="1">
+   <PIN pinname="Input String" visible="1" slicecount="1" values="||">
    </PIN>
    </NODE>
    <NODE nodename="IOBox (Value Advanced)" componentmode="InABox" id="14">
@@ -211,19 +193,9 @@
    </PIN>
    <PIN pinname="Descriptive Name" slicecount="1" values="Initialized">
    </PIN>
-   <PIN pinname="Y Input Value" visible="1">
+   <PIN pinname="Y Input Value" visible="1" slicecount="1" values="0">
    </PIN>
    </NODE>
-   <LINK srcnodeid="0" srcpinname="Version" dstnodeid="15" dstpinname="Input String">
-   </LINK>
-   <LINK srcnodeid="0" srcpinname="Frame Count" dstnodeid="14" dstpinname="Y Input Value">
-   </LINK>
-   <LINK srcnodeid="13" srcpinname="Output String" dstnodeid="0" dstpinname="Source Name">
-   </LINK>
-   <LINK srcnodeid="12" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Framerate">
-   </LINK>
-   <LINK srcnodeid="9" srcpinname="Buffers" dstnodeid="0" dstpinname="Texture In">
-   </LINK>
    <NODE systemname="Info (DX11.Texture 2d)" filename="%VVVV%\packs\dx11\nodes\plugins\VVVV.DX11.Nodes.dll" nodename="Info (DX11.Texture 2d)" componentmode="Hidden" id="16">
    <BOUNDS type="Node" left="2140" top="3790" width="100" height="100">
    </BOUNDS>
@@ -306,6 +278,34 @@
    <PIN pinname="Descriptive Name" slicecount="1" values="Send">
    </PIN>
    </NODE>
+   <NODE systemname="Send (NDI DX11)" filename="..\VVVV.NDI\bin\x64\Debug\VVVV.NDI.dll" nodename="Send (NDI DX11)" componentmode="Hidden" id="0">
+   <BOUNDS type="Node" left="5300" top="4140" width="100" height="100">
+   </BOUNDS>
+   <BOUNDS type="Box" left="5300" top="4140" width="2000" height="2000">
+   </BOUNDS>
+   <PIN pinname="Version" visible="1">
+   </PIN>
+   <PIN pinname="Frame Count" visible="1">
+   </PIN>
+   <PIN pinname="Source Name" visible="1">
+   </PIN>
+   <PIN pinname="Framerate" visible="1">
+   </PIN>
+   <PIN pinname="Send" visible="1" slicecount="1" values="0">
+   </PIN>
+   <PIN pinname="Texture In" visible="1">
+   </PIN>
+   </NODE>
+   <LINK srcnodeid="0" srcpinname="Version" dstnodeid="15" dstpinname="Input String">
+   </LINK>
+   <LINK srcnodeid="0" srcpinname="Frame Count" dstnodeid="14" dstpinname="Y Input Value">
+   </LINK>
+   <LINK srcnodeid="13" srcpinname="Output String" dstnodeid="0" dstpinname="Source Name">
+   </LINK>
+   <LINK srcnodeid="12" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Framerate">
+   </LINK>
+   <LINK srcnodeid="9" srcpinname="Buffers" dstnodeid="0" dstpinname="Texture In">
+   </LINK>
    <LINK srcnodeid="20" srcpinname="Y Output Value" dstnodeid="0" dstpinname="Send">
    </LINK>
    </PATCH>

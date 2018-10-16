@@ -152,7 +152,7 @@ namespace VVVV.DX11.Nodes
                     // no metadata
                     p_metadata = IntPtr.Zero,
                     // only valid on received frames
-                    timestamp = NDIlib.recv_timestamp_undefined
+                    timestamp = 0//NDIlib.recv_timestamp_undefined
                 };
 
                 // get a compatible bitmap and graphics context
