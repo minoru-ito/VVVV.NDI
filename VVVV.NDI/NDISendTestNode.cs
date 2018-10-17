@@ -15,6 +15,7 @@ namespace VVVV.DX11.Nodes
 {
     namespace VVVVNDI
     {
+        // send generated test image (1920 x 1080, BGRA)
         [PluginInfo(Name = "NDISendTest", Category = "NDI", AutoEvaluate = true)]
         public class NDISendTestNode : IPluginEvaluate, IPartImportsSatisfiedNotification, IDisposable
         {
@@ -74,7 +75,7 @@ namespace VVVV.DX11.Nodes
 
                 // .Net interop doesn't handle UTF-8 strings, so do it manually
                 // These must be freed later
-                sourceNamePtr = UTF.StringToUtf8("vvvv SendTest");
+                sourceNamePtr = UTF.StringToUtf8("VVVV.NDI.SendTest");
 
                 groupsNamePtr = IntPtr.Zero;
 
@@ -201,15 +202,6 @@ namespace VVVV.DX11.Nodes
 
             public void Evaluate(int SpreadMax)
             {
-                //FLogger.Log(LogType.Debug, "Evaluate");
-
-                //FOut.SliceCount = FIn.SliceCount;
-
-                //for (int i = 0; i < SpreadMax; i++)
-                //{
-                //    FOut[i] = FIn[i] * 2;
-                //}
-
                 if (FInUpdate[0])
                 {
                     string msg = "";
@@ -275,30 +267,6 @@ namespace VVVV.DX11.Nodes
                     }
                     else
                     {
-                        /*
-                        // fill it with a lovely color
-                        graphics.Clear(Color.Maroon);
-
-                        // show which source we are
-                        DrawPrettyText(graphics, "C# Example Source", 96.0f, fontFamily, new Point(960, 100), textFormat, Brushes.White, outlinePen);
-
-                        // Get the tally state of this source (we poll it),
-                        NDI.NDIlib_tally_t NDI_tally = new NDI.NDIlib_tally_t();
-                        NDI.Send.NDIlib_send_get_tally(sendInstancePtr, ref NDI_tally, 0);
-
-                        // Do something different depending on where we are shown
-                        if (NDI_tally.on_program)
-                            DrawPrettyText(graphics, "On Program", 96.0f, fontFamily, new Point(960, 225), textFormat, Brushes.White, outlinePen);
-                        else if (NDI_tally.on_preview)
-                            DrawPrettyText(graphics, "On Preview", 96.0f, fontFamily, new Point(960, 225), textFormat, Brushes.White, outlinePen);
-
-                        //// show what frame we've rendered
-                        DrawPrettyText(graphics, String.Format("Frame {0}", frameNumber.ToString()), 96.0f, fontFamily, new Point(960, 350), textFormat, Brushes.White, outlinePen);
-
-                        // show current time
-                        DrawPrettyText(graphics, System.DateTime.Now.ToString(), 96.0f, fontFamily, new Point(960, 900), textFormat, Brushes.White, outlinePen);
-                        */
-
                         try
                         {
                             // We now submit the frame. Note that this call will be clocked so that we end up submitting 
@@ -307,7 +275,6 @@ namespace VVVV.DX11.Nodes
 
                             // Just display something helpful in the console
                             FLogger.Log(LogType.Debug, "Frame number " + frameNumber + " sent.");
-                            //Console.WriteLine("Frame number {0} sent.", frameNumber);
                         }
                         catch (Exception e)
                         {

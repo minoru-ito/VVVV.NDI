@@ -99,7 +99,6 @@
     <Compile Include="NDISendNode.cs" />
     <Compile Include="NDIReceiveNode.cs" />
     <Compile Include="NDISendTestNode.cs" />
-    <Compile Include="TesterNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

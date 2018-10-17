@@ -2,17 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-//using System.Threading;
 using System.ComponentModel.Composition;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
 using VVVV.Core.Logging;
 using VVVV.PluginInterfaces.V1;
 using VVVV.PluginInterfaces.V2;
-//using SlimDX.Direct3D11;
-//using FeralTic.DX11;
-//using FeralTic.DX11.Resources;
 using NewTek;
 using NewTek.NDI;
 

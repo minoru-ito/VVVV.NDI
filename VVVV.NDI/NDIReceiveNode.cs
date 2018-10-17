@@ -4,9 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.ComponentModel.Composition;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
 using VVVV.Core.Logging;
 using VVVV.PluginInterfaces.V1;
 using VVVV.PluginInterfaces.V2;
@@ -117,13 +114,7 @@ namespace VVVV.DX11.Nodes
                 }
                 else
                 {
-                    //FLogger.Log(LogType.Message, "is_supported_CPU: " + NDIlib.is_supported_CPU());
-                    //FLogger.Log(LogType.Message, Marshal.PtrToStringAnsi(NDIlib.version()));
-
                     FOutInitialized[0] = true;
-                    //initialized = true;
-
-                    //_findInstance = new Finder(true);
                 }
             }
 
@@ -182,36 +173,6 @@ namespace VVVV.DX11.Nodes
 
             public void Evaluate(int SpreadMax)
             {
-                /*
-                if(FInConnect.IsChanged)
-                {
-                    if(FInConnect[0])
-                    {
-                        ObservableCollection<Source> sources = _findInstance.Sources;
-                        if (sources.Count > 0)
-                            Connect(sources[0]);
-                    }
-                    else
-                    {
-                        Disconnect();
-                    }
-                }
-
-                if(FInUpdate[0])
-                {
-                    //FLogger.Log(LogType.Message, "try");
-
-                    if (_findInstance != null)
-                    {
-                        ObservableCollection<Source> sources = _findInstance.Sources;
-                        if (sources.Count > 0)
-                            FLogger.Log(LogType.Debug, sources[0].ComputerName + "," + sources[0].Name + "," + sources[0].SourceName);
-                        //FLogger.Log(LogType.Message, sources.Count + "");
-                    }
-                    //UpdateFindList();
-                }
-                */
-
                 if(FInSource.IsChanged)
                 {
                     if (FInSource.SliceCount == 0 || FInSource[0] == null)

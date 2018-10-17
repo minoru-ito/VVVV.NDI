@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.ComponentModel.Composition;
-//using System.Linq;
-//using System.Text;
-//using System.Threading.Tasks;
 using VVVV.Core.Logging;
 using VVVV.PluginInterfaces.V1;
 using VVVV.PluginInterfaces.V2;
@@ -49,8 +46,8 @@ namespace VVVV.DX11.Nodes
             [Input("Timeout", MinValue = 0, DefaultValue = 1000)]
             ISpread<uint> FInTimeout;
 
-            [Input("RGBA to BGRA")]
-            ISpread<bool> FInRGBAtoBGRA;
+            //[Input("RGBA to BGRA")]
+            //ISpread<bool> FInRGBAtoBGRA;
 
 
             [Output("Version", Visibility = PinVisibility.Hidden)]
@@ -70,39 +67,19 @@ namespace VVVV.DX11.Nodes
 
             public DX11RenderContext AssignedContext { get; set; }
             public event DX11RenderRequestDelegate RenderRequest;
-            //SlimDX.DXGI.Format format = SlimDX.DXGI.Format.Unknown;
-            //uint width = 0;
-            //uint height = 0;
-            //uint fps = 0;
-            ////bool textureValid = false;
             long dataStreamLength;
             byte[] srcBuffer;
             byte[] convertBuffer;
 
-            //IntPtr sendInstancePtr = IntPtr.Zero;
-            //IntPtr bufferPtr;
-            //NDIlib.video_frame_v2_t videoFrame;
-
             bool initialized = false;
             bool instanceCreated = false;
-            //bool videoFrameDefined = false;
             bool disposed = false;
-
-            // use texture array for avoid readback delay
-            //uint dstSize = 2;
-            //uint dstIndex;
-            //uint readBackIndex;
-            //bool dstReady = false;
-            //bool readbackReady = false;
-            //Texture2D[] dst;// = DX11Texture2D.CreateStaging(AssignedContext, src);
 
 
             // ===
 
             private Object sendInstanceLock = new Object();
             private IntPtr sendInstancePtr = IntPtr.Zero;
-
-            ////RenderTargetBitmap targetBitmap = null;
 
             private int stride;
             private int bufferSize;
@@ -148,9 +125,6 @@ namespace VVVV.DX11.Nodes
                 }
                 else
                 {
-                    //FLogger.Log(LogType.Message, "is_supported_CPU: " + NDIlib.is_supported_CPU());
-                    //FLogger.Log(LogType.Message, Marshal.PtrToStringAnsi(NDIlib.version()));
-
                     FOutInitialized[0] = true;
                     initialized = true;
 
@@ -207,20 +181,8 @@ namespace VVVV.DX11.Nodes
                         // Not required, but "correct". (see the SDK documentation)
                         NDIlib.destroy();
 
-                        //
-
-                        //foreach(Texture2D tex in dst)
-                        //{
-                        //    tex.Dispose();
-                        //}
-
                         srcBuffer = null;
                         convertBuffer = null;
-
-                        // free our buffer
-                        //Marshal.FreeHGlobal(bufferPtr);
-
-                        //
 
                         disposed = true;
                     }
@@ -276,11 +238,6 @@ namespace VVVV.DX11.Nodes
                 int xres = src.Description.Width;
                 int yres = src.Description.Height;
 
-                //FLogger.Log(LogType.Message, xres + "," + yres);
-
-                //int frNum = 0;// NdiFrameRateNumerator;
-                //int frDen = 0;// NdiFrameRateDenominator;
-
                 // sanity
                 if (sendInstancePtr == IntPtr.Zero || xres < 8 || yres < 8)
                     return;
@@ -289,14 +246,7 @@ namespace VVVV.DX11.Nodes
                 bufferSize = yres * stride;
                 aspectRatio = (float)xres / (float)yres;
 
-                //if(bufferPtr != IntPtr.Zero)
-                //{
-                //    // free our buffer
-                //    Marshal.FreeHGlobal(bufferPtr);
-                //}
-
                 // allocate some memory for a video buffer
-                //bufferPtr = Marshal.AllocHGlobal(bufferSize);
                 IntPtr bufferPtr = Marshal.AllocHGlobal(bufferSize);
 
                 //FLogger.Log(LogType.Message, "updateSendBuffer: " + xres + "," + yres + "," + bufferSize);
@@ -317,7 +267,7 @@ namespace VVVV.DX11.Nodes
                     // This is a progressive frame
                     frame_format_type = NDIlib.frame_format_type_e.frame_format_type_progressive,
                     // Timecode.
-                    timecode = NDIlib.send_timecode_synthesize,// 0,
+                    timecode = NDIlib.send_timecode_synthesize,
                     // The video memory used for this frame
                     p_data = bufferPtr,
                     // The line to line stride of this image
@@ -325,7 +275,7 @@ namespace VVVV.DX11.Nodes
                     // no metadata
                     p_metadata = IntPtr.Zero,
                     // only valid on received frames
-                    timestamp = 0// NDIlib.recv_timestamp_undefined
+                    timestamp = 0
                 };
 
                 // copy data to buffer
@@ -403,112 +353,6 @@ namespace VVVV.DX11.Nodes
                 }
             }
 
-            //void functionA()
-            //{
-            //    Texture2D src = FInTexture[0][AssignedContext].Resource;
-
-            //    if (!videoFrameDefined || format != src.Description.Format || width != src.Description.Width || height != src.Description.Height || fps != FInFramerate[0])
-            //        DefineVideoFrame(AssignedContext, src);
-
-            //    //FLogger.Log(LogType.Debug, "DefineVideoFrame() called");
-
-            //    if (!videoFrameDefined)
-            //        return;
-
-            //    //FLogger.Log(LogType.Debug, "videoFrameDefined");
-
-            //    try
-            //    {
-            //        //FLogger.Log(LogType.Debug, "[A] " + readbackReady + "," + dstIndex + "," + readBackIndex);
-
-            //        if (readbackReady)
-            //        {
-            //            // create Texture for get resource from GPU to CPU
-            //            //Texture2D dst = DX11Texture2D.CreateStaging(AssignedContext, src);
-            //            //if(dst == null)
-            //            //    dst = DX11Texture2D.CreateStaging(AssignedContext, src);
-
-            //            // copy resource
-            //            AssignedContext.CurrentDeviceContext.CopyResource(src, dst[dstIndex]);
-
-            //            // get dataBox to access byte buffer
-            //            // MapFlags.DoNotWait will throw exception when GPU not ready
-            //            DataBox db = AssignedContext.CurrentDeviceContext.MapSubresource(dst[readBackIndex], 0, MapMode.Read, MapFlags.None); //.DoNotWait);// .None);
-
-            //            if (db == null)
-            //                FLogger.Log(LogType.Debug, "db == null");
-            //            else
-            //                FLogger.Log(LogType.Debug, width + "," + height + "," + db.Data.Length);
-
-            //            // create buffer
-            //            if (dataStreamLength != db.Data.Length)
-            //            {
-            //                dataStreamLength = db.Data.Length;
-            //                srcBuffer = new byte[dataStreamLength];
-            //                convertBuffer = new byte[dataStreamLength];
-
-            //                FLogger.Log(LogType.Debug, "dataStreamLength: " + dataStreamLength);
-            //            }
-
-            //            // test 1: read byte buffer and copy to IntPtr
-            //            db.Data.Read(srcBuffer, 0, (int)dataStreamLength);
-            //            // test 2: use CopyMemory method
-            //            //CopyMemory(bufferPtr, db.Data.DataPointer, (int)dataStreamLength);
-
-            //            // convert color format
-            //            if (FInRGBAtoBGRA[0])
-            //            {
-            //                ConvertBuffer();
-                            
-            //                Marshal.Copy(convertBuffer, 0, bufferPtr, (int)dataStreamLength);
-            //            }
-            //            else
-            //            {
-            //                //await db.Data.ReadAsync(srcBuffer, 0, (int)dataStreamLength);
-            //                Marshal.Copy(srcBuffer, 0, bufferPtr, (int)dataStreamLength);
-            //            }
-
-            //            if (FInSend[0])
-            //            {
-            //                Send();
-            //            }
-
-            //            // unmap resource
-            //            AssignedContext.CurrentDeviceContext.UnmapSubresource(dst[readBackIndex], 0);
-
-            //            db = null;
-
-            //            //dst.Dispose(); // this will slow down but needed
-            //            //dst = null;
-            //        }
-
-            //        // update index to shift target texture
-            //        if (++dstIndex >= dstSize)
-            //        {
-            //            // set flag after texture array filled
-            //            if (!readbackReady)
-            //                readbackReady = true;
-
-            //            dstIndex = 0;
-            //        }
-
-            //        if (++readBackIndex >= dstSize)
-            //            readBackIndex = 0;
-
-            //        //textureValid = true;
-
-            //        // set flag to false
-            //        //isReady = false;
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        FLogger.Log(LogType.Error, e.Message);
-
-            //        //textureValid = false;
-            //        return;
-            //    }
-            //}
-
             void ConvertBuffer()
             {
                 /*
@@ -535,29 +379,7 @@ namespace VVVV.DX11.Nodes
                     convertBuffer[i + 3] = srcBuffer[i + 3];  // A
                 }
             }
-
-            //void Send()
-            //{
-            //    // are we connected to anyone?
-            //    //if (NDI.Send.NDIlib_send_get_no_connections(sendInstancePtr, 10000) < 1)
-            //    if (NDIlib.send_get_no_connections(sendInstancePtr, FInTimeout[0]) < 1)
-            //    {
-            //        // no point rendering
-            //        FLogger.Log(LogType.Debug, "No current connections, so no rendering needed.");
-            //        //Console.WriteLine("No current connections, so no rendering needed.");
-
-            //        // Wait a bit, otherwise our limited example will end before you can connect to it
-            //        //System.Threading.Thread.Sleep(50);
-            //    }
-            //    else
-            //    {
-            //        // We now submit the frame. Note that this call will be clocked so that we end up submitting 
-            //        // at exactly 29.97fps.
-            //        //NDI.Send.NDIlib_send_send_video(sendInstancePtr, ref videoFrame);
-            //        NDIlib.send_send_video_async_v2(sendInstancePtr, ref videoFrame);
-            //    }
-            //}
-
+            
             // prepare to send texture
             void CreateSendInstance()
             {
@@ -614,112 +436,7 @@ namespace VVVV.DX11.Nodes
                     Monitor.Exit(sendInstanceLock);
                 }
             }
-
-            //void DefineVideoFrame(DX11RenderContext assignedContext, Texture2D texture)
-            //{
-            //    //FLogger.Log(LogType.Message, "DefineVideoFrame()");
-
-            //    try
-            //    {
-            //        // reset flag
-            //        videoFrameDefined = false;
-
-            //        // update format, width, height
-            //        format = texture.Description.Format;
-            //        width = (uint)texture.Description.Width;
-            //        height = (uint)texture.Description.Height;
-            //        fps = FInFramerate[0];
-
-            //        //FOutFormat[0] = format.ToString();
-
-            //        //if (FInLog[0])
-            //        //{
-            //        FLogger.Log(LogType.Debug, "[DefineVideoFrame] format: " + format + ", width: " + width + ", height: " + height + ", fps: " + fps);
-            //        //}
-
-            //        // define our bitmap properties
-            //        //uint xres = 1920;
-            //        //uint yres = 1080;
-            //        //uint stride = (xres * 32/*BGRA bpp*/ + 7) / 8;
-            //        //uint bufferSize = yres * stride;
-            //        uint stride = (width * 32 + 7) / 8;
-            //        uint bufferSize = height * stride;
-
-            //        //if (FInLog[0])
-            //        //{
-            //        FLogger.Log(LogType.Debug, "[DefineVideoFrame] stride: " + stride + ", bufferSize: " + bufferSize);
-            //        //}
-
-            //        // mino
-            //        if (bufferPtr != IntPtr.Zero)
-            //        {
-            //            // free our buffer
-            //            Marshal.FreeHGlobal(bufferPtr);
-            //        }
-
-            //        // allocate some memory for a video buffer
-            //        bufferPtr = Marshal.AllocHGlobal((int)bufferSize);
-
-            //        // We are going to create a 1920x1080 progressive frame at 29.97Hz.
-            //        videoFrame = new NDI.NDIlib_video_frame_t()
-            //        {
-            //            // Resolution
-            //            xres = width,//xres,
-            //            yres = height,// yres,
-            //                          // Use BGRA video
-            //            FourCC = NDI.NDIlib_FourCC_type_e.NDIlib_FourCC_type_BGRA,
-            //            // The frame-eate
-            //            frame_rate_N = fps * 1000, //30000,
-            //            frame_rate_D = 1000, //1001,
-            //                                 // The aspect ratio (16:9)
-            //            picture_aspect_ratio = ((float)width / (float)height), //(16.0f / 9.0f),
-            //                                                                   // This is a progressive frame
-            //            frame_format_type = NDI.NDIlib_frame_format_type_e.NDIlib_frame_format_type_progressive,
-            //            // Timecode.
-            //            timecode = 0,
-            //            // The video memory used for this frame
-            //            p_data = bufferPtr,
-            //            // The line to line stride of this image
-            //            line_stride_in_bytes = (uint)stride
-            //        };
-
-            //        // reset if exists
-            //        if (readbackReady)
-            //        {
-            //            // reset flag
-            //            readbackReady = false;
-
-            //            // clear texture
-            //            if (dst != null)
-            //            {
-            //                foreach (Texture2D tex in dst)
-            //                {
-            //                    tex.Dispose();
-            //                }
-            //                dst = null;
-            //            }
-            //        }
-
-            //        // prepare texture for readback
-            //        dst = new Texture2D[dstSize];
-            //        for (int i = 0; i < dstSize; i++)
-            //        {
-            //            dst[i] = DX11Texture2D.CreateStaging(assignedContext, texture);
-            //        }
-
-            //        // reset index
-            //        dstIndex = 0;
-            //        readBackIndex = dstSize - 1;
-
-            //        videoFrameDefined = true;
-            //    }
-            //    catch (Exception e)
-            //    {
-            //        FLogger.Log(LogType.Error, "[DefineVideoFrame] " + e.Message);
-            //    }
-            //}
-
-
+            
             //
 
             private void SendThreadProc()
