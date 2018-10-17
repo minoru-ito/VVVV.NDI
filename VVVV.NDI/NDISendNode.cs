@@ -308,7 +308,7 @@ namespace VVVV.DX11.Nodes
                     xres = src.Description.Width,
                     yres = src.Description.Height,
                     // Use BGRA video
-                    FourCC = NDIlib.FourCC_type_e.FourCC_type_BGRA,
+                    FourCC = NDIlib.FourCC_type_e.FourCC_type_RGBA, // NDIlib.FourCC_type_e.FourCC_type_BGRA,
                     // The frame-rate
                     frame_rate_N = FInFramerate[0] * 1000,
                     frame_rate_D = 1000,

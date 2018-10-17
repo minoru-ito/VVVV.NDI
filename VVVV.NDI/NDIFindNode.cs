@@ -44,8 +44,7 @@ namespace VVVV.DX11.Nodes
 
             [Import()]
             public ILogger FLogger;
-
-            bool initialized = false;
+            
             bool disposed = false;
 
             Finder _findInstance;
@@ -76,7 +75,6 @@ namespace VVVV.DX11.Nodes
                 else
                 {
                     FOutInitialized[0] = true;
-                    initialized = true;
 
                     _findInstance = new Finder(true);
                 }

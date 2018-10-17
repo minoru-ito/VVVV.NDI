@@ -10,7 +10,7 @@
    </PACK>
    <PACK Name="addonpack" Version="36.0.0">
    </PACK>
-   <NODE systemname="Find (NDI)" filename="..\VVVV.NDI\bin\x64\Release\VVVV.NDI.dll" nodename="Find (NDI)" componentmode="Hidden" id="0">
+   <NODE systemname="Find (NDI)" filename="..\VVVV.NDI\bin\x64\Debug\VVVV.NDI.dll" nodename="Find (NDI)" componentmode="Hidden" id="0">
    <BOUNDS type="Node" left="2590" top="1510" width="100" height="100">
    </BOUNDS>
    <BOUNDS type="Box" left="2590" top="1510" width="2000" height="2000">
@@ -28,7 +28,7 @@
    <PIN pinname="Version" visible="1">
    </PIN>
    </NODE>
-   <NODE systemname="Receive (NDI DX11)" filename="..\VVVV.NDI\bin\x64\Release\VVVV.NDI.dll" nodename="Receive (NDI DX11)" componentmode="Hidden" id="1">
+   <NODE systemname="Receive (NDI DX11)" filename="..\VVVV.NDI\bin\x64\Debug\VVVV.NDI.dll" nodename="Receive (NDI DX11)" componentmode="Hidden" id="1">
    <BOUNDS type="Node" left="1440" top="3300" width="100" height="100">
    </BOUNDS>
    <BOUNDS type="Box" left="1440" top="3300" width="2000" height="2000">

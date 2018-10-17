@@ -74,7 +74,7 @@ namespace VVVV.DX11.Nodes
 
                 // .Net interop doesn't handle UTF-8 strings, so do it manually
                 // These must be freed later
-                sourceNamePtr = UTF.StringToUtf8("Example");
+                sourceNamePtr = UTF.StringToUtf8("vvvv SendTest");
 
                 groupsNamePtr = IntPtr.Zero;
 

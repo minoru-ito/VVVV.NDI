@@ -24,6 +24,7 @@ namespace VVVV.DX11.Nodes
         public class NDIReceiveNode : IPluginEvaluate, IPartImportsSatisfiedNotification, IDisposable, IDX11ResourceHost
         {
             [DllImport("kernel32.dll", EntryPoint = "CopyMemory", SetLastError = false)]
+            //[DllImport("kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
             public static extern void CopyMemory(IntPtr dest, IntPtr src, int count);
 
 
@@ -72,9 +73,10 @@ namespace VVVV.DX11.Nodes
             int width = 0;
             int height = 0;
             int bufferSize;
-            bool initialized = false;
-            bool invalidate = false;
-            bool disposed = false;
+            //bool initialized = false;
+            bool invalidate = false;        // do update texture when this flag = true
+            bool lockBuffer = false;        // not update buffer when this flag = true
+            bool disposed = false;          // instance of this class is disposed or not
 
             // a pointer to our unmanaged NDI finder instance
             //IntPtr _findInstancePtr = IntPtr.Zero;
@@ -92,8 +94,6 @@ namespace VVVV.DX11.Nodes
 
             // a map of names to sources
             //Dictionary<String, NDIlib.source_t> _sources = new Dictionary<string, NDIlib.source_t>();
-
-
 
             public void OnImportsSatisfied()
             {
@@ -121,7 +121,7 @@ namespace VVVV.DX11.Nodes
                     //FLogger.Log(LogType.Message, Marshal.PtrToStringAnsi(NDIlib.version()));
 
                     FOutInitialized[0] = true;
-                    initialized = true;
+                    //initialized = true;
 
                     //_findInstance = new Finder(true);
                 }
@@ -241,13 +241,13 @@ namespace VVVV.DX11.Nodes
                 {
                     FOutTexture.SliceCount = 1;
 
-                    if(FOutTexture[0] == null)
+                    if (FOutTexture[0] == null)
                     {
                         //FLogger.Log(LogType.Debug, "invalidate = true");
                         FOutTexture[0] = new DX11Resource<DX11DynamicTexture2D>();
                     }
 
-                    //invalidate = true;
+                    invalidate = true;
                 }
 
                 if (FInSource.SliceCount == 0 || FInSource[0] == null)
@@ -270,6 +270,9 @@ namespace VVVV.DX11.Nodes
 
                 if (invalidate || !FOutTexture[0].Contains(context))
                 {
+                    // do not update buffer from here
+                    lockBuffer = true;
+
                     SlimDX.DXGI.Format fmt;
                     Texture2DDescription desc;
 
@@ -296,6 +299,9 @@ namespace VVVV.DX11.Nodes
                     t.WriteData(buffer_ptr, bufferSize);
 
                     invalidate = false;
+
+                    // ready to update buffer
+                    lockBuffer = false;
                 }
             }
 
@@ -435,20 +441,20 @@ namespace VVVV.DX11.Nodes
 
                             //FLogger.Log(LogType.Debug, "received");
 
-                            // if not enabled, just discard
+                            // if not enabled or lockBuffer flag = true, just discard
                             // this can also occasionally happen when changing sources
-                            if (videoFrame.p_data == IntPtr.Zero)
+                            if (videoFrame.p_data == IntPtr.Zero || lockBuffer)
                             {
                                 // alreays free received frames
                                 NDIlib.recv_free_video_v2(_recvInstancePtr, ref videoFrame);
 
                                 break;
                             }
-
+                            
                             // get all our info so that we can free the frame
                             int yres = (int)videoFrame.yres;
                             int xres = (int)videoFrame.xres;
-
+                            
                             width = xres;
                             height = yres;
 
@@ -465,20 +471,28 @@ namespace VVVV.DX11.Nodes
                                     Marshal.FreeHGlobal(buffer_ptr);
 
                                 buffer_ptr = Marshal.AllocHGlobal((int)size);
+
+                                bufferSize = size;
                             }
                             
                             // copy frame data
                             CopyMemory(buffer_ptr, videoFrame.p_data, bufferSize);
 
-                            bufferSize = size;
-
                             // free frames that were received
                             NDIlib.recv_free_video_v2(_recvInstancePtr, ref videoFrame);
 
                             // set flag for update texture
-                            invalidate = true;
+                            //invalidate = true;
 
                             break;
+
+                        // not support audio
+                        case NDIlib.frame_type_e.frame_type_audio:
+                            // always free received frames
+                            NDIlib.recv_free_audio_v2(_recvInstancePtr, ref audioFrame);
+
+                            break;
+                        
                         // Metadata
                         case NDIlib.frame_type_e.frame_type_metadata:
 

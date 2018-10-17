@@ -30,6 +30,7 @@ obj/
 [Bb]uild
 [Dd]ebug*/
 [Rr]elease*/
+.vs/
 /.vs
 Ankh.NoLoad
 
