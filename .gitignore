@@ -30,9 +30,11 @@ obj/
 [Bb]uild
 [Dd]ebug*/
 [Rr]elease*/
-.vs/
-/.vs
 Ankh.NoLoad
+
+#Hidden files
+.*
+!/.gitignore
 
 #Tooling
 #_ReSharper*/
