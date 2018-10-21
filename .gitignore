@@ -26,10 +26,10 @@
 *.opensdf
 ipch/
 obj/
-[Bb]in
-[Bb]uild
+#[Bb]in
+#[Bb]uild
 [Dd]ebug*/
-[Rr]elease*/
+#[Rr]elease*/
 Ankh.NoLoad
 
 #Hidden files
@@ -53,7 +53,7 @@ Ankh.NoLoad
 [Pp]ackages/
 
 #dll's
-*.dll
+#*.dll
 
 #other files
 *.avi

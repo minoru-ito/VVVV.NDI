@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FeralTic">
-      <HintPath>..\dependences\FeralTic.dll</HintPath>
+      <HintPath>..\..\..\vvvv\vvvv_50beta37_x64\packs\dx11\core\FeralTic.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NDILibDotNet2, Version=1.0.0.0, Culture=neutral, processorArchitecture=AMD64">
@@ -82,11 +82,11 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="VVVV.DX11.Core">
-      <HintPath>..\dependences\VVVV.DX11.Core.dll</HintPath>
+      <HintPath>..\..\..\vvvv\vvvv_50beta37_x64\packs\dx11\core\VVVV.DX11.Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VVVV.DX11.Lib">
-      <HintPath>..\dependences\VVVV.DX11.Lib.dll</HintPath>
+      <HintPath>..\..\..\vvvv\vvvv_50beta37_x64\packs\dx11\core\VVVV.DX11.Lib.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="VVVV.Utils, Version=35.0.0.0, Culture=neutral, processorArchitecture=MSIL">
