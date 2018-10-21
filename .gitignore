@@ -49,6 +49,10 @@ Ankh.NoLoad
 # VVVV backup
 *~.xml
 
+# VVVV test and archive files
+_tester*/
+_release archive*/
+
 # nuget
 [Pp]ackages/
 
