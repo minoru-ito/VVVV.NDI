@@ -19,11 +19,31 @@ namespace VVVV.DX11.Nodes
 {
     namespace VVVV.NDI
     {
+        public enum FourCCType
+        {
+            RGBA = NDIlib.FourCC_type_e.FourCC_type_RGBA,
+            BGRA = NDIlib.FourCC_type_e.FourCC_type_BGRA,
+            RGBX = NDIlib.FourCC_type_e.FourCC_type_RGBX,
+            BGRX = NDIlib.FourCC_type_e.FourCC_type_BGRX
+            //I420 = NDIlib.FourCC_type_e.NDIlib_FourCC_type_I420,
+            //NV12 = NDIlib.FourCC_type_e.NDIlib_FourCC_type_NV12,
+            //YV12 = NDIlib.FourCC_type_e.NDIlib_FourCC_type_YV12,
+            //RGBA = NDIlib.FourCC_type_e.FourCC_type_RGBA,
+            //BGRA = NDIlib.FourCC_type_e.FourCC_type_BGRA,
+            //UYVA = NDIlib.FourCC_type_e.FourCC_type_UYVA,
+            //RGBX = NDIlib.FourCC_type_e.FourCC_type_RGBX,
+            //BGRX = NDIlib.FourCC_type_e.FourCC_type_BGRX,
+            //UYVY = NDIlib.FourCC_type_e.FourCC_type_UYVY
+        }
+
         [PluginInfo(Name = "Send", Version = "DX11", Category = "NDI", AutoEvaluate = true)]
         public class NDISendNode : IPluginEvaluate, IPartImportsSatisfiedNotification, IDisposable, IDX11ResourceDataRetriever
         {
             [Input("Texture In")]
             Pin<DX11Resource<DX11Texture2D>> FInTexture;
+
+            [Input("Pixel Format", DefaultEnumEntry = "BGRX")]
+            ISpread<FourCCType> FInPixelFormat;
 
             [Input("Source Name", DefaultString = "Example")]
             IDiffSpread<string> FInSourceName;
@@ -31,29 +51,17 @@ namespace VVVV.DX11.Nodes
             [Input("Framerate", MinValue = 1, DefaultValue = 30)]
             ISpread<int> FInFramerate;
 
-            //[Input("Clock Video", DefaultBoolean = true)]
-            //ISpread<bool> FInClockVideo;
-
-            //[Input("Clock Audio", DefaultBoolean = false)]
-            //ISpread<bool> FInClockAudio;
-
-            //[Input("Connect")]
-            //IDiffSpread<bool> FInConnect;
-
             [Input("Send")]
             ISpread<bool> FInSend;
 
             [Input("Timeout", MinValue = 0, DefaultValue = 1000)]
             ISpread<uint> FInTimeout;
 
-            //[Input("RGBA to BGRA")]
-            //ISpread<bool> FInRGBAtoBGRA;
 
-
-            [Output("Version", Visibility = PinVisibility.Hidden)]
+            [Output("Version", Visibility = PinVisibility.OnlyInspector)]
             ISpread<string> FOutVersion;
 
-            [Output("Initialized", Visibility = PinVisibility.Hidden)]
+            [Output("Initialized", Visibility = PinVisibility.OnlyInspector)]
             ISpread<bool> FOutInitialized;
 
             [Output("Frame Count")]
@@ -242,7 +250,10 @@ namespace VVVV.DX11.Nodes
                 if (sendInstancePtr == IntPtr.Zero || xres < 8 || yres < 8)
                     return;
 
+                // it seems 16px offset between AMD <-> NVIDIA
                 stride = (xres * 32/*BGRA bpp*/ + 7) / 8;
+                //stride = xres * 4; // always 4bytes per pixel. (RGBA or BGRA or RGBX or BGRX)
+                //stride = (xres * 32 + FInStride[0]) / 8;
                 bufferSize = yres * stride;
                 aspectRatio = (float)xres / (float)yres;
 
@@ -258,7 +269,8 @@ namespace VVVV.DX11.Nodes
                     xres = src.Description.Width,
                     yres = src.Description.Height,
                     // Use BGRA video
-                    FourCC = NDIlib.FourCC_type_e.FourCC_type_RGBA, // NDIlib.FourCC_type_e.FourCC_type_BGRA,
+                    //FourCC = NDIlib.FourCC_type_e.FourCC_type_RGBA,
+                    FourCC = (NDIlib.FourCC_type_e)Enum.ToObject(typeof(NDIlib.FourCC_type_e), (int)FInPixelFormat[0]),
                     // The frame-rate
                     frame_rate_N = FInFramerate[0] * 1000,
                     frame_rate_D = 1000,

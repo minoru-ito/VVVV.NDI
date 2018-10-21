@@ -17,6 +17,22 @@ namespace VVVV.DX11.Nodes
 {
     namespace VVVV.NDI
     {
+        public enum RecvBandwidth
+        {
+            Lowest = NDIlib.recv_bandwidth_e.recv_bandwidth_lowest,
+            Highest = NDIlib.recv_bandwidth_e.recv_bandwidth_highest
+        }
+
+        public enum RecvColorFormat
+        {
+            BGRX_BGRA = NDIlib.recv_color_format_e.recv_color_format_BGRX_BGRA,
+            UYVY_BGRA = NDIlib.recv_color_format_e.recv_color_format_UYVY_BGRA,
+            RGBX_RGBA = NDIlib.recv_color_format_e.recv_color_format_RGBX_RGBA,
+            UYVY_RGBA = NDIlib.recv_color_format_e.recv_color_format_UYVY_RGBA,
+            fastest = NDIlib.recv_color_format_e.recv_color_format_fastest,
+            BGRX_BGRA_flipped = NDIlib.recv_color_format_e.recv_color_format_BGRX_BGRA_flipped
+        }
+
         [PluginInfo(Name = "Receive", Version = "DX11", Category = "NDI")]
         public class NDIReceiveNode : IPluginEvaluate, IPartImportsSatisfiedNotification, IDisposable, IDX11ResourceHost
         {
@@ -28,14 +44,14 @@ namespace VVVV.DX11.Nodes
             [Input("Source", IsSingle = true)]
             IDiffSpread<Source> FInSource;
 
-            [Input("Receiver Name", DefaultString = "Receiver")]
+            [Input("Bandwidth", DefaultEnumEntry = "Highest")]
+            IDiffSpread<RecvBandwidth> FInBandwidth;
+
+            [Input("ColorFormat", DefaultEnumEntry = "BGRX_BGRA")]
+            IDiffSpread<RecvColorFormat> FInColorFormat;
+
+            [Input("Receiver Name", DefaultString = "Receiver", Visibility = PinVisibility.OnlyInspector)]
             ISpread<string> FInReceiverName;
-
-            //[Input("Connect")]
-            //IDiffSpread<bool> FInConnect;
-
-            //[Input("Update", IsBang = true)]
-            //ISpread<bool> FInUpdate;
 
 
             [Output("Texture Out")]
@@ -50,33 +66,22 @@ namespace VVVV.DX11.Nodes
             [Output("Buffer Size")]
             ISpread<int> FOutBufferSize;
 
-            //[Output("Key")]
-            //ISpread<string> FOutKey;
-
-            //[Output("Format")]
-            //ISpread<string> FOutFormat;
-
-            [Output("Version", Visibility = PinVisibility.Hidden)]
+            [Output("Version", Visibility = PinVisibility.OnlyInspector)]
             ISpread<string> FOutVersion;
             
-            [Output("Initialized", Visibility = PinVisibility.Hidden)]
+            [Output("Initialized", Visibility = PinVisibility.OnlyInspector)]
             ISpread<bool> FOutInitialized;
 
             [Import()]
             public ILogger FLogger;
 
-            //Byte[] buffer = null;
             IntPtr buffer_ptr = IntPtr.Zero;
             int width = 0;
             int height = 0;
             int bufferSize;
-            //bool initialized = false;
             bool invalidate = false;        // do update texture when this flag = true
             bool lockBuffer = false;        // not update buffer when this flag = true
             bool disposed = false;          // instance of this class is disposed or not
-
-            // a pointer to our unmanaged NDI finder instance
-            //IntPtr _findInstancePtr = IntPtr.Zero;
 
             // a pointer to our unmanaged NDI receiver instance
             IntPtr _recvInstancePtr = IntPtr.Zero;
@@ -86,11 +91,6 @@ namespace VVVV.DX11.Nodes
 
             // a way to exit the thread safely
             bool _exitThread = false;
-
-            //Finder _findInstance;
-
-            // a map of names to sources
-            //Dictionary<String, NDIlib.source_t> _sources = new Dictionary<string, NDIlib.source_t>();
 
             public void OnImportsSatisfied()
             {
@@ -140,22 +140,12 @@ namespace VVVV.DX11.Nodes
                             _receiveThread = null;
                         }
 
-                        // destroy the NDI find instance
-                        //if(_findInstancePtr != IntPtr.Zero)
-                        //{
-                        //    NDIlib.find_destroy(_findInstancePtr);
-                        //    _findInstancePtr = IntPtr.Zero;
-                        //}
-
                         // destroy the receiver
                         if(_recvInstancePtr != IntPtr.Zero)
                         {
                             NDIlib.recv_destroy(_recvInstancePtr);
                             _recvInstancePtr = IntPtr.Zero;
                         }
-
-                        //if (_findInstance != null)
-                        //    _findInstance.Dispose();
 
                         // Not required, but "correct". (see the SDK documentation)
                         NDIlib.destroy();
@@ -185,6 +175,12 @@ namespace VVVV.DX11.Nodes
                     }
                 }
 
+                if(FInBandwidth.IsChanged || FInColorFormat.IsChanged)
+                {
+                    if (FInSource[0] != null && FInSource.SliceCount > 0)
+                        Connect(FInSource[0]);
+                }
+
                 if(_recvInstancePtr == IntPtr.Zero)
                 {
                     if(FOutTexture.SliceCount == 1)
@@ -204,7 +200,6 @@ namespace VVVV.DX11.Nodes
 
                     if (FOutTexture[0] == null)
                     {
-                        //FLogger.Log(LogType.Debug, "invalidate = true");
                         FOutTexture[0] = new DX11Resource<DX11DynamicTexture2D>();
                     }
 
@@ -293,7 +288,7 @@ namespace VVVV.DX11.Nodes
                 {
                     p_ndi_name = UTF.StringToUtf8(source.Name)
                 };
-
+                
                 // make a description of the receiver we want
                 NDIlib.recv_create_v3_t recvDescription = new NDIlib.recv_create_v3_t()
                 {
@@ -301,10 +296,12 @@ namespace VVVV.DX11.Nodes
                     source_to_connect_to = source_t,
 
                     // we want BGRA frames for this example
-                    color_format = NDIlib.recv_color_format_e.recv_color_format_BGRX_BGRA,
+                    //color_format = NDIlib.recv_color_format_e.recv_color_format_BGRX_BGRA,
+                    color_format = (NDIlib.recv_color_format_e)Enum.ToObject(typeof(NDIlib.recv_color_format_e), (int)FInColorFormat[0]),
 
                     // we want full quality - for small previews or limited bandwidth, choose lowest
-                    bandwidth = NDIlib.recv_bandwidth_e.recv_bandwidth_highest,
+                    //bandwidth = NDIlib.recv_bandwidth_e.recv_bandwidth_highest,
+                    bandwidth = (NDIlib.recv_bandwidth_e)Enum.ToObject(typeof(NDIlib.recv_bandwidth_e), (int)FInBandwidth[0]),
 
                     // let NDIlib deinterlace for us if needed
                     allow_video_fields = false,
@@ -400,8 +397,6 @@ namespace VVVV.DX11.Nodes
                         // Video data
                         case NDIlib.frame_type_e.frame_type_video:
 
-                            //FLogger.Log(LogType.Debug, "received");
-
                             // if not enabled or lockBuffer flag = true, just discard
                             // this can also occasionally happen when changing sources
                             if (videoFrame.p_data == IntPtr.Zero || lockBuffer)
@@ -411,7 +406,19 @@ namespace VVVV.DX11.Nodes
 
                                 break;
                             }
-                            
+
+                            // check receive data
+                            //FLogger.Log(LogType.Message,
+                            //    "FourCC: " + Enum.GetName(typeof(NDIlib.FourCC_type_e), videoFrame.FourCC)
+                            //    + ", frame_format_type: " + Enum.GetName(typeof(NDIlib.frame_format_type_e), videoFrame.frame_format_type)
+                            //    + ", frameRate_D: " + videoFrame.frame_rate_D
+                            //    + ", frameRate_N: " + videoFrame.frame_rate_N
+                            //    + ", line_stride_in_bytes: " + videoFrame.line_stride_in_bytes
+                            //    + ", picture_aspect_ratio: " + videoFrame.picture_aspect_ratio
+                            //    + ", xres: " + videoFrame.xres
+                            //    + ", yres: " + videoFrame.yres
+                            //);
+
                             // get all our info so that we can free the frame
                             int yres = (int)videoFrame.yres;
                             int xres = (int)videoFrame.xres;
@@ -420,7 +427,7 @@ namespace VVVV.DX11.Nodes
                             height = yres;
 
                             // quick and dirty aspect ratio correction for non-square pixels - SD 4:3, 16:9, etc.
-                            double dpiX = 96.0 * (videoFrame.picture_aspect_ratio / ((double)xres / (double)yres));
+                            //double dpiX = 96.0 * (videoFrame.picture_aspect_ratio / ((double)xres / (double)yres));
 
                             int stride = (int)videoFrame.line_stride_in_bytes;
                             int size = yres * stride;
